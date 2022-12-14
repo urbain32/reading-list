@@ -1,14 +1,22 @@
-import { useState } from 'react'
-import BookList from '../components/BookList'
-import BookForm from '../components/BookForm'
+import { useEffect, useState } from "react";
+import BookList from "../components/BookList";
+import BookForm from "../components/BookForm";
+import { db } from "../firebase/config";
+import { collection, doc, getDocs } from "firebase/firestore";
 
 export default function Home() {
-  const [books, setBooks] = useState([
-    { title: 'the name of the wind', id: 1 },
-    { title: 'the dragon reborn', id: 2 },
-    { title: 'the final empire', id: 3 },
-    { title: 'the way of kings', id: 4 }
-  ])
+  const [books, setBooks] = useState(null);
+  useEffect(() => {
+    // get data firebase 9
+    const ref = collection(db, "books");
+    getDocs(ref).then((snapshot) => {
+      let result = [];
+      snapshot.docs.forEach((doc) => {
+        result.push({ id: doc.id, ...doc.data() });
+      });
+      setBooks(result);
+    });
+  }, []);
 
   return (
     <div className="App">
